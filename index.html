@@ -281,9 +281,11 @@
                 height: 11in;
                 padding: 0.5in;
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                grid-template-rows: repeat(3, 1fr);
-                gap: 0;
+                grid-template-columns: repeat(3, 1fr); /* 3 columns */
+                grid-auto-rows: 1fr;                   /* Equal row heights */
+                gap: 0.25in;                           /* Add gap for spacing */
+                align-items: stretch;                  /* Stretch cards vertically */
+                justify-items: stretch;                /* Stretch cards horizontally */
             }
             
             .print-page:last-child {
@@ -302,6 +304,9 @@
                 background: white;
                 font-size: 14px;
                 line-height: 1.4;
+                height: 100%;      /* Fill grid cell vertically */
+                width: 100%;       /* Fill grid cell horizontally */
+                box-sizing: border-box;
             }
             
             .print-card-label {
