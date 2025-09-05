@@ -264,11 +264,10 @@
             body * {
                 visibility: hidden;
             }
-            
             .print-area, .print-area * {
                 visibility: visible;
+                display: block !important; /* <-- ADD THIS LINE */
             }
-            
             .print-area {
                 position: absolute;
                 left: 0;
