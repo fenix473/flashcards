@@ -266,54 +266,62 @@
             }
             .print-area, .print-area * {
                 visibility: visible;
-                display: block !important; /* <-- ADD THIS LINE */
+                display: block !important;
             }
             .print-area {
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
+                width: 100vw;
+                height: 100vh;
+                background: white;
             }
-            
+
             .print-page {
                 page-break-after: always;
-                width: 8.5in;
-                height: 11in;
-                padding: 0.5in;
+                box-sizing: border-box;
+                width: 210mm;
+                height: 297mm;
+                padding: 10mm;
                 display: grid;
-                grid-template-columns: repeat(3, 1fr); /* 3 columns */
-                grid-auto-rows: 1fr;                   /* Equal row heights */
-                gap: 0.25in;                           /* Add gap for spacing */
-                align-items: stretch;                  /* Stretch cards vertically */
-                justify-items: stretch;                /* Stretch cards horizontally */
+                /* Dynamically set columns based on cardsPerPage */
+                grid-template-columns: repeat(3, 1fr); /* Default: 3 columns */
+                grid-template-rows: repeat(3, 1fr);    /* Default: 3 rows */
+                gap: 6mm;
+                align-items: stretch;
+                justify-items: stretch;
             }
-            
-            .print-page:last-child {
-                page-break-after: auto;
-            }
-            
             .print-card {
-                border: 2px solid #000;
-                border-style: dashed;
-                padding: 15px;
+                border: 1px dashed #000;
+                background: white;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 text-align: center;
-                background: white;
-                font-size: 14px;
-                line-height: 1.4;
-                height: 100%;      /* Fill grid cell vertically */
-                width: 100%;       /* Fill grid cell horizontally */
+                font-size: 16px;
+                line-height: 1.2;
+                width: 100%;
+                height: 100%;
                 box-sizing: border-box;
+                overflow: hidden;
             }
-            
             .print-card-label {
-                font-size: 10px;
+                font-size: 11px;
                 color: #666;
-                margin-bottom: 8px;
+                margin-bottom: 6px;
                 font-weight: bold;
+            }
+            .print-card > div {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                /* Shrink text if needed */
+                font-size: clamp(10px, 2vw, 16px);
+                word-break: break-word;
+                overflow-wrap: break-word;
             }
         }
 
@@ -686,11 +694,18 @@
         }
 
         function generatePrintPages(cardData, cardsPerPage, side, container) {
+            // Determine grid size for A4
+            let cols = 3, rows = 3;
+            if (cardsPerPage === 6) { cols = 3; rows = 2; }
+            if (cardsPerPage === 4) { cols = 2; rows = 2; }
+
             const pages = Math.ceil(cardData.length / cardsPerPage);
 
             for (let page = 0; page < pages; page++) {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'print-page';
+                pageDiv.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                pageDiv.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
                 const startIndex = page * cardsPerPage;
                 const endIndex = Math.min(startIndex + cardsPerPage, cardData.length);
@@ -705,7 +720,6 @@
                     label.textContent = side === 'front' ? 'Question' : 'Answer';
 
                     const content = document.createElement('div');
-                    // FIX: Do not escape HTML so MathJax can render LaTeX
                     content.innerHTML = card[side];
 
                     cardDiv.appendChild(label);
@@ -722,7 +736,7 @@
 
                 container.appendChild(pageDiv);
             }
-            
+
             // Render LaTeX in print area
             setTimeout(() => {
                 if (window.MathJax) {
