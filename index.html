@@ -683,38 +683,39 @@
 
         function generatePrintPages(cardData, cardsPerPage, side, container) {
             const pages = Math.ceil(cardData.length / cardsPerPage);
-            
+
             for (let page = 0; page < pages; page++) {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'print-page';
-                
+
                 const startIndex = page * cardsPerPage;
                 const endIndex = Math.min(startIndex + cardsPerPage, cardData.length);
-                
+
                 for (let i = startIndex; i < endIndex; i++) {
                     const card = cardData[i];
                     const cardDiv = document.createElement('div');
                     cardDiv.className = 'print-card';
-                    
+
                     const label = document.createElement('div');
                     label.className = 'print-card-label';
                     label.textContent = side === 'front' ? 'Question' : 'Answer';
-                    
+
                     const content = document.createElement('div');
-                    content.innerHTML = escapeHtml(card[side]);
-                    
+                    // FIX: Do not escape HTML so MathJax can render LaTeX
+                    content.innerHTML = card[side];
+
                     cardDiv.appendChild(label);
                     cardDiv.appendChild(content);
                     pageDiv.appendChild(cardDiv);
                 }
-                
+
                 // Fill empty slots
                 for (let i = endIndex; i < startIndex + cardsPerPage; i++) {
                     const emptyDiv = document.createElement('div');
                     emptyDiv.className = 'print-card';
                     pageDiv.appendChild(emptyDiv);
                 }
-                
+
                 container.appendChild(pageDiv);
             }
             
